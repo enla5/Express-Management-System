@@ -6,13 +6,13 @@
 ### 4.网页采用LayUI设计
 ### 5.读者可自行下载修改
 #### ——1.网页采用LayUI设计，所有包的导入均采用网址导入，所以需要全程保持联网状态，否则加载不出来样式(效果如下)
-  #### 当快递柜空闲时，存入按钮可用，取出按钮不可用
+  #### 当快递柜空闲时，存入按钮可用，取出按钮不可用（快递柜数量可自行增加，但是在数据库一定填写成表中空闲状态的表单样子，后续的存件联动填写会需要）
 ![image](https://user-images.githubusercontent.com/49264147/122499459-8ba1c680-d023-11eb-8e86-7b756a392481.png)
 #### ——2.点击存件后 存入按钮不可用，取出按钮可用
 ![image](https://user-images.githubusercontent.com/49264147/122499941-65305b00-d024-11eb-9ecc-28b4c52506da.png)
 #### 存入数据后显示如下
 ![image](https://user-images.githubusercontent.com/49264147/122500017-8db85500-d024-11eb-9caa-bb8910de7621.png)
-#### ——3.其他功能
+#### ——3.其他功能(添加快递人员可在此处使用添加快递员功能)
 ![image](https://user-images.githubusercontent.com/49264147/122500154-d112c380-d024-11eb-8352-96f7699f586a.png)
 #### ——4.取件后
 ![image](https://user-images.githubusercontent.com/49264147/122500230-facbea80-d024-11eb-9154-b5e8029f76cb.png)
