@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>取快递操作</title>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css"/>
+    <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+</head>
+<body >
+<div style="margin-top: 20px ;margin-left: 300px">
+    <div style="float: left">
+    <form class="layui-form" id="formId">
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="phone" id="selectexPosition" class="layui-input" placeholder="请输入取件手机号码"  lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">取件码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" id="selectexState" class="layui-input" placeholder="请输入取件码"  lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="addbtn">查询</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">查询结果</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="text" name="" id="showresult" class="layui-input" placeholder="请填写以上数据后点击提交即可获得" readonly="true" style="color: crimson;text-align: center">
+            </div>
+        </div>
+
+    </form>
+    </div>
+</div>
+
+
+<script>
+    layui.use(['form','jquery','laydate'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery;
+        //监听提交
+        form.on('submit(addbtn)', function (data) {
+            var index = layer.alert(JSON.stringify(data.field), {
+                title: '信息',
+                content:"确定提交吗？"
+            }, function () {
+                // 点确认就关闭弹出层
+                layer.close(index);
+                var url="checkCode";
+                $.post(url,data.field,function(res){
+                    layer.msg(res.msg);
+                    var jsonData = JSON.stringify(res.data);// 转成JSON格式
+                    var result = $.parseJSON(jsonData);// 转成JSON对象
+                    // alert(jsonData);
+                    if (res.data!=null){
+                        var resultList="你的快递在"+result[0].exPosition+"，快递仓编号为："+result[0].exWarehouseId+",请取件！"
+
+                        $("#showresult").attr("value",resultList);
+                    }else{
+                        $("#showresult").attr("value","你输入的取件码无效!");
+                    }
+                    $('#formId')[0].reset();
+                });
+            });
+            return false;
+        });
+
+    });
+
+</script>
+</body>
+</html>

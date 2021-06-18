@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>快递管理</title>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css"/>
+    <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="layui-header">
+<!--导航条-->
+<ul class="layui-nav" >
+<!--    <li class="layui-nav-item">-->
+<!--        <a href="showexcard.html" target="dataTable">首页<span class="layui-badge-dot"></span></a>-->
+<!--    </li>-->
+<!--    <li class="layui-nav-item">-->
+<!--        <a>添加信息</a>-->
+<!--        <dl class="layui-nav-child">-->
+<!--            <dd><a href="addbox.html" target="dataTable">存入快递</a></dd>-->
+<!--            <dd><a href="addcourier.html" target="dataTable">添加快递员</a></dd>-->
+<!--        </dl>-->
+<!--    </li>-->
+<!--    <li class="layui-nav-item">-->
+<!--        <a href="checkcode.html" target="dataTable">取出快递<span class="layui-badge-dot"></span></a>-->
+<!--    </li>-->
+
+    <li class="layui-nav-item" style="text-align: center;margin-left: 30%">
+        <a style="text-align: center;font-family: 华文行楷;font-size: 30px;">
+            &nbsp;&nbsp;
+            快递管理交互界面
+        </a>
+    </li>
+    <li class="layui-nav-item layui-layout-right" >
+        <form class="layui-form layui-col-space">
+            请快递柜位置
+            <div class="layui-inline layui-show-xs-block">
+                <input type="text" name="exPosition" id="exPosition" placeholder="请快递柜位置" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+            快递员姓名
+            <div class="layui-inline layui-show-xs-block">
+                <input type="text" name="exPersonName" id="exPersonName" class="layui-input" autocomplete="off" placeholder="快递员姓名"  lay-verify="required">
+            </div>
+            <div class="layui-inline layui-show-xs-block" >
+                <button class="layui-btn" lay-submit="" lay-filter="searchUser" ><i class="layui-icon">&#xe615;</i>查询</button>
+            </div>
+        </form>
+    </li>
+</ul>
+</div>
+<div class="layui-side layui-bg-black" >
+    <div class="layui-side-scroll">
+        <ul class="layui-nav layui-nav-tree" lay-filter="menu" style="margin-top: 100px">
+            <li class="layui-nav-item">
+                <a href="showexcard.html" target="dataTable">首页<span class="layui-badge-dot"></span></a>
+            </li>
+            <li class="layui-nav-item">
+                <a>添加信息</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="addbox.html" target="dataTable">存入快递</a></dd>
+                    <dd><a href="addcourier.html" target="dataTable">添加快递员</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="checkcode.html" target="dataTable">取出快递<span class="layui-badge-dot"></span></a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="showrecord.html" target="dataTable">存取记录信息<span class="layui-badge-dot"></span></a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="showcourier.html" target="dataTable">快递员信息<span class="layui-badge-dot"></span></a>
+            </li>
+        </ul>
+    </div>
+</div>
+<iframe name="dataTable" src="showexcard.html" style="width:100%;height:1000px" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="no">
+
+</iframe>
+<!--导航条截至-->
+
+<script>
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['form','jquery','element','table'], function(){
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery,
+            element = layui.element,
+            table=layui.table;
+        //监听提交
+
+        form.on('submit(searchUser)', function (data) {
+
+            var index = layer.alert(JSON.stringify(data.field), {
+                title: '查询:',
+                content: "确认提交查询信息？"
+            }, function () {
+                // 点确认就关闭弹出层
+                layer.close(index);
+                var url="findBoxByPositionAndExName";
+                $.post(url,data.field,function(res){
+                    var dat=res.data;
+                    var jsonData=JSON.stringify(dat);// 转成JSON格式
+                    var result=$.parseJSON(jsonData);//转成JSON对象
+                    // layer.msg(res.msg);  //测试
+                    // alert(jsonData);     //测试
+                    var a=data.field.exPosition;
+                    var b=data.field.exPersonName;
+                    var urlTT='findBoxByPositionAndExName?exPosition='+a+'&exPersonName='+b;
+                    // alert(a+"--------"+b+"----------"+c+'--------'+urlTT);   //测试
+                    layer.open({
+                        type: 1,
+                        // content: jsonData //注意，如果str是object，那么需要字符拼接。
+                        area: ['70%', '250px'], //宽高
+                        title : ["查询结果","align:center"],
+                        maxmin : false,
+                        content : '<div><table id="templateTable" ></table></div>',
+                        success: function () {
+                            table.render({
+                                elem: '#templateTable',
+                                url:  urlTT,
+                                page: false //关闭分页
+                                , cols: [[ //表头
+                                    {field: 'exId', title: '序号', width: 73, fixed: 'left',sort:true}
+                                    , {field: 'exPosition', title: '快递柜位置', width: 110}
+                                    , {field: 'exWarehouseId', title: '快递仓编号', width: 115}
+                                    , {field: 'exState', title: '状态', width: 77}
+                                    , {field: 'exCardId', title: '快递单号', width: 100}
+                                    , {field: 'exPersonName', title: '快递员姓名', width: 100}
+                                    , {field: 'exPersonPhone', title: '快递员手机号码', width: 130}
+                                    , {field: 'exPickupCode', title: '取件码', width: 80}
+                                    , {field: 'exReceiveName', title: '收件人姓名', width: 100}
+                                    , {field: 'exReceivePhone', title: '收件人手机号码', width: 140}
+                                ]]
+                            });
+                        }
+                    });
+                    layer.msg(res.msg);
+                });
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

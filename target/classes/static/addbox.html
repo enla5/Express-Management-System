@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>存入快递</title>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css"/>
+    <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+</head>
+<body >
+<div style="margin-top: 20px;margin-left: 300px">
+    <div style="float: left">
+    <form class="layui-form" id="formId">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递仓编号</label>
+            <div class="layui-input-inline">
+                <select id="selectexBox" name="exWarehouseId" lay-filter="selectBoxCard" lay-verify="required">
+                    <option >请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递柜位置</label>
+            <div class="layui-input-inline">
+                <input type="text" name="exPosition" id="selectexPosition" class="layui-input" placeholder="请输入快递柜位置" readonly="true" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-inline">
+                <input type="text" name="exState" id="selectexState" class="layui-input" placeholder="当前状态" readonly="true" lay-verify="required">
+            </div>
+        </div>
+        <!--违法行为描述-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递员姓名</label>
+            <div class="layui-input-inline">
+                <select id="selectexCourier" name="exPersonName" lay-filter="selectCou" lay-verify="required">
+                    <option>请选择</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递公司</label>
+            <div class="layui-input-inline">
+                <input type="text" name="exCompany" id="seleccompany" class="layui-input" placeholder="请选择快递员" readonly="true" lay-verify="required">
+            </div>
+        </div>
+
+        <!--    违法行为代码-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递员电话</label>
+            <div class="layui-input-inline" >
+                <input type="text" name="exPersonPhone" id="selectcoutel" class="layui-input" placeholder="请选择快递员" readonly="true" lay-verify="required">
+            </div>
+        </div>
+        <!--    罚款信息-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递单号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="exCardId"  class="layui-input" placeholder="请输入快递单号"  lay-verify="required">
+            </div>
+        </div>
+        <!--    记分信息-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">收件人姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="exReceiveName"  class="layui-input" placeholder="请输收件人姓名"  lay-verify="required">
+            </div>
+        </div>
+        <!--    违法地点信息-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">收件人电话号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="exReceivePhone"  class="layui-input" placeholder="请输入收件人电话号码" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="addbtn">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+
+<script>
+    layui.use(['form','jquery','laydate'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery;
+        //监听提交
+        form.on('submit(addbtn)', function (data) {
+            var index = layer.alert(JSON.stringify(data.field), {
+                title: '信息',
+                content:"确定提交吗？"
+            }, function () {
+                // 点确认就关闭弹出层
+                layer.close(index);
+                var url="saveBox";
+                $.post(url,data.field,function(res){
+                    layer.msg(res.msg);
+                    $('#formId')[0].reset();
+                    $("#selectexPosition").attr("value",null);
+                    $("#selectexState").attr("value",null);
+                    $("#seleccompany").attr("value",null);
+                    $("#selectcoutel").attr("value",null);
+                });
+            });
+            return false;
+        });
+
+        //展示快递仓下拉列表
+        $.post('findAllCabinet',function(rs){
+            //item是返回的数据集合中的每个元素
+            $.each(rs.data, function (index, item) {
+                // 追加option节点 t
+                //item.name是option里的文本值
+                //item.id是option的value值
+                $("#selectexBox").append(new Option(item.exWarehouseId, item.exId));
+            });
+            //重新渲染下拉框
+            form.render('select');
+        });
+
+        //将相关快递柜信息添加到对应表
+        form.on('select(selectBoxCard)', function(data){
+            console.log(data.elem); //得到select原始DOM对象
+            console.log(data.value); //得到被选中的值
+            console.log(data.othis); //得到美化后的DOM对象
+            $.post('findCabinetById?exId='+data.value,function(rs){
+                //item是返回的数据集合中的每个元素
+                $.each(rs.data, function (index, item) {
+                    $("#selectexPosition").attr("value",item.exPosition);
+                    $("#selectexState").attr("value",item.exState);
+                });
+                //重新渲染下拉框
+                form.render('select');
+            })
+        });
+
+
+
+        //展示快递员姓名下拉信息
+        $.post('findAllCourier',function(rs1){
+            //item是返回的数据集合中的每个元素
+            $.each(rs1.data, function (index, item1) {
+                $("#selectexCourier").append(new Option(item1.couName, item1.couId));
+            });
+            //重新渲染下拉框
+            form.render('select');
+        });
+
+        //将相关快递员信息添加到对应信息
+        form.on('select(selectCou)', function(data){
+            console.log(data.elem); //得到select原始DOM对象
+            console.log(data.value); //得到被选中的值
+            console.log(data.othis); //得到美化后的DOM对象
+            $.post('findCourierById?couId='+data.value,function(rs){
+                //item是返回的数据集合中的每个元素
+                $.each(rs.data, function (index, item) {
+                    // $("#selectIllItem").append(new Option(item.illDetail, item.illId));
+                    $("#seleccompany").attr("value",item.couCompany);
+                    $("#selectcoutel").attr("value",item.couTel);
+                });
+                //重新渲染下拉框
+                form.render('select');
+            })
+        });
+    });
+
+</script>
+</body>
+</html>

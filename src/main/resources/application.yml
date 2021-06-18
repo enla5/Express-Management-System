@@ -1,0 +1,19 @@
+spring:
+  #配置数据源
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/expresscard?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+  #jpa配置
+  jpa:
+    database: mysql  #数据库，
+    hibernate:
+      ddl-auto: update  #每次启动，如果实体类跟表不一致，更新表数据
+    show-sql: true #显示sql语句
+
