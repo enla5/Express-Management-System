@@ -18,3 +18,4 @@
 ![image](https://user-images.githubusercontent.com/49264147/122500230-facbea80-d024-11eb-9154-b5e8029f76cb.png)
 #### ——5.还有其他功能请自行下载体验
 #### 本人初学者，不足请见谅！😁😛
+![image](https://user-images.githubusercontent.com/49264147/122847500-64583b80-d33a-11eb-8ec4-b3e7b8bd55e4.png)
